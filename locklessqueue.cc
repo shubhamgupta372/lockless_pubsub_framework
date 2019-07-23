@@ -3,7 +3,7 @@
 #include <condition_variable>
 #include <mutex>
 #include <thread>
-#include "spdk/env.h"
+//#include "spdk/env.h"
 
 LocklessQueue::LocklessQueue()
 {
@@ -42,9 +42,9 @@ size_t LocklessQueue::dequeue(struct spdk_ring * queue, void ** obj, size_t coun
 }
 
 
-int LocklessQueue::queue_count(struct spdk_ring *queue)
+size_t LocklessQueue::size()
 {
-
+   return spdk_ring_count(lq);
 }
 
 

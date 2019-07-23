@@ -8,6 +8,7 @@
 #include"threadbase.h"
 #include"mutexcv.h"
 #include<pthread.h>
+#include"locklessqueue.h"
 using namespace std;
 class pubsubservice;
 
@@ -15,8 +16,8 @@ class subscriber:public ThreadBase {
 public:
 	subscriber(string);
 	void Run();
-	vector<message> getSubscriberMessages();
-	void setSubscriberMessages(vector<message> &subscriberMessages);
+	LocklessQueue * getSubscriberMessages();
+	void setSubscriberMessages(LocklessQueue * subscriberMessages);
 	void addSubscription(string topic, pubsubservice &service);
 	void removeSubscription(string topic, pubsubservice &service);
 	//void getMessagesForSubscriberOfTopic(string topic, pubsubservice &service);
@@ -29,7 +30,8 @@ public:
 	}*/
 private:
 	string name;
-	vector<message> subscriberMessages;
+	LocklessQueue subscriberMessages;
+	//vector<message> subscriberMessages;
 	LockCondwait lockcw;
 	unsigned long int msgcount; 
 	/*bool operator ==(subscriber right) const

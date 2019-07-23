@@ -14,19 +14,20 @@ pubsubservice::pubsubservice(int size)
 void pubsubservice::adMessageToQueue(message &msg)
 {
 	while(1){
-		int status = serviceMutex.lock();
-		if(messagesQueue.size()<this->size){	
-			messagesQueue.push(msg);
+		//int status = serviceMutex.lock();
+		if(messagesQueue.size()<this->size){
+			void * ptr=&msg;	
+			messagesQueue.enqueue(messagesQueue.lq,&ptr,1);
 			msgcount++;
 			cout<<"New message published for '"<<msg.getTopic()<< "' topic"<< endl;
 			cout<<"Count of messages published till now : "<< msgcount << endl;
 			// compare with spdk enque behaviour.
-			status = serviceMutex.unlock();
+			//status = serviceMutex.unlock();
 			break;
 		}
 		else
 		{
-			status = serviceMutex.unlock();
+			//status = serviceMutex.unlock();
 			sleep(5);
 		}
 	}
@@ -70,41 +71,43 @@ void pubsubservice::broadcast()
 
 		}
 		else {
-			int status= serviceMutex.lock();
+			//int status= serviceMutex.lock();
 			while (messagesQueue.size()) {
-				message Message = messagesQueue.front();
-				messagesQueue.pop();
+				void * ptr;
+				messagesQueue.dequeue(messagesQueue.lq,&ptr,1);
+				message Message = *(message *)ptr;
+				//messagesQueue.pop();
 				string topic = Message.getTopic();
 				map<string, vector<subscriber*>>::iterator it;
 				it = subscribersTopicMap.find(topic);
 				if (it != subscribersTopicMap.end()) {
 					vector<subscriber*> subscribers = subscribersTopicMap[topic];
 					for (subscriber* a : subscribers) {
-						a->getlock()->lock();
-						vector<message> subMessages = a->getSubscriberMessages();
-						subMessages.push_back(Message);
-						a->setSubscriberMessages(subMessages);
-						if(subMessages.size()){
+						//a->getlock()->lock();
+						LocklessQueue * subMessages = a->getSubscriberMessages();
+						subMessages->enqueue(subMessages->lq,&ptr,1);
+						//a->setSubscriberMessages(subMessages);
+						//if(subMessages.size()){
 							//pthread_cond_signal(&a->subCond);
-							a->getlock()->signal();
-						}
-						cout << "Number of messages for current sub " <<a->getname() <<" are : " << subMessages.size() << endl;
+							//a->getlock()->signal();
+						//}
+						cout << "Number of messages for current sub " <<a->getname() <<" are : " << subMessages->size() << endl;
 						a->printMessages();
-						a->getlock()->unlock();
+						//a->getlock()->unlock();
 					}
 				}
 				else
 				{
 					cout<< "No subscriber for " << topic << " topic. pushing to default subscriber" <<endl;
-					vector<message> subMessages = defSubscriber->getSubscriberMessages();
-					subMessages.push_back(Message);
-					defSubscriber->setSubscriberMessages(subMessages);
-					cout << "Number of messages for current sub " <<defSubscriber->getname() <<" are : " << subMessages.size() << endl;
+					LocklessQueue * subMessages = defSubscriber->getSubscriberMessages();
+					subMessages->enqueue(subMessages->lq,&ptr,1);
+					//defSubscriber->setSubscriberMessages(subMessages);
+					cout << "Number of messages for current sub " <<defSubscriber->getname() <<" are : " << subMessages->size() << endl;
 					defSubscriber->printMessages();
 				}
 				
 			}
-			status= serviceMutex.unlock();
+			//status= serviceMutex.unlock();
 		}
 	}
 }

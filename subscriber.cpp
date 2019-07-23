@@ -9,13 +9,13 @@ subscriber::subscriber(string name)
 	this->name = name;
 	this->msgcount=0;
 }
-vector<message> subscriber::getSubscriberMessages() 
+LocklessQueue * subscriber::getSubscriberMessages() 
 {
-	return subscriberMessages;
+	return &subscriberMessages;
 }
-void subscriber::setSubscriberMessages(vector<message> &subscriberMessagesarg)
+void subscriber::setSubscriberMessages(LocklessQueue *subscriberMessagesarg)
 {
-	this->subscriberMessages = subscriberMessagesarg;
+	this->subscriberMessages = *subscriberMessagesarg;
 }
 void subscriber::addSubscription(string topic, pubsubservice &pubSubService)
 {
@@ -33,9 +33,9 @@ void subscriber::getMessagesForSubscriberOfTopic(string topic, pubsubservice &pu
 */ 
 void subscriber::printMessages() const
 {
-	for (message Message : subscriberMessages) {
-		cout<<"Message Topic -> " + Message.getTopic() + " : " + Message.getPayload()<<endl;
-	}
+	// for (message Message : subscriberMessages) {
+	// 	cout<<"Message Topic -> " + Message.getTopic() + " : " + Message.getPayload()<<endl;
+	// }
 }
 string subscriber::getname()
 {
@@ -58,7 +58,8 @@ void subscriber::Run()
 		else{
 			while(this->subscriberMessages.size()>0){
 				lockcw.lock();
-				subscriberMessages.pop_back();
+				void * ptr;
+				subscriberMessages.dequeue(this->subscriberMessages.lq,&ptr,1);
 				this->msgcount++;
 				lockcw.unlock();
 				cout<<"In Subscriber "<<this->name<<" Run method \n";

@@ -1,12 +1,8 @@
-
-
 #ifndef __LOCKLESSQUEUE_H__
 #define __LOCKLESSQUEUE_H__
 
-
-
 #include <iostream>
-#include "spdk/env.h"
+//#include "spdk/env.h"
 
 /*enum queue_type {
         SPDK_RING_TYPE_SP_SC,       /* Single-producer, single-consumer */
@@ -21,7 +17,8 @@ class LocklessQueue{
         size_t enqueue(struct spdk_ring * queue, void ** obj, size_t count);
         size_t dequeue(struct spdk_ring * queue, void ** obj, size_t count);
         int queue_count(struct spdk_ring *queue);
-    private:
+        size_t size();
+    public:
         //size_t size; will be used later
         struct spdk_ring * lq;
         //util::SpinLock          m_lock;
