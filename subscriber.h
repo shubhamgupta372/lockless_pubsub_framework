@@ -6,7 +6,6 @@
 #include"message.h"
 #include<vector>
 #include"threadbase.h"
-#include"mutexcv.h"
 #include<pthread.h>
 #include"locklessqueue.h"
 using namespace std;
@@ -17,22 +16,15 @@ public:
 	subscriber(string);
 	void Run();
 	LocklessQueue * getSubscriberMessages();
-	void setSubscriberMessages(LocklessQueue * subscriberMessages);
+	void setSubscriberMessages(LocklessQueue &subscriberMessages);
 	void addSubscription(string topic, pubsubservice &service);
 	void removeSubscription(string topic, pubsubservice &service);
-	//void getMessagesForSubscriberOfTopic(string topic, pubsubservice &service);
 	void printMessages() const;
 	string getname();
-	LockCondwait * getlock();
-	/*bool operator< (subscriber& right) const
-	{
-		return subscriberMessages.size() < right.subscriberMessages.size();
-	}*/
+
 private:
 	string name;
 	LocklessQueue subscriberMessages;
-	//vector<message> subscriberMessages;
-	LockCondwait lockcw;
 	unsigned long int msgcount; 
 	/*bool operator ==(subscriber right) const
 	{

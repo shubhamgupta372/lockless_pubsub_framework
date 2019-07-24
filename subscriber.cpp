@@ -2,6 +2,8 @@
 #include"message.h"
 #include"pubsubservice.h"
 #include"subscriber.h"
+#include<chrono>
+#include<unistd.h>
 using namespace std;
 
 subscriber::subscriber(string name)
@@ -13,9 +15,9 @@ LocklessQueue * subscriber::getSubscriberMessages()
 {
 	return &subscriberMessages;
 }
-void subscriber::setSubscriberMessages(LocklessQueue *subscriberMessagesarg)
+void subscriber::setSubscriberMessages(LocklessQueue &subscriberMessagesarg)
 {
-	this->subscriberMessages = *subscriberMessagesarg;
+	this->subscriberMessages = subscriberMessagesarg;
 }
 void subscriber::addSubscription(string topic, pubsubservice &pubSubService)
 {
@@ -25,43 +27,36 @@ void subscriber::removeSubscription(string topic, pubsubservice &pubSubService)
 {
 	pubSubService.removeSubscriber(topic, this);
 }
-/*
-void subscriber::getMessagesForSubscriberOfTopic(string topic, pubsubservice &pubSubService)
-{
-	pubSubService.getMessagesForSubscriberOfTopic(topic, *this);
-}
-*/ 
 void subscriber::printMessages() const
 {
-	// for (message Message : subscriberMessages) {
-	// 	cout<<"Message Topic -> " + Message.getTopic() + " : " + Message.getPayload()<<endl;
-	// }
+/* 	subscriber obj("temp");
+	obj.subscriberMessages=this->subscriberMessages;
+	while(obj.subscriberMessages.get_filled_size()){
+		message Message=obj->subscriberMessages.pop();
+		cout<<"Message Topic -> " + Message.getTopic() + " : " + Message.getPayload()<<endl;
+	} */
+	/*
+	for (message Message : subscriberMessages) {
+		cout<<"Message Topic -> " + Message.getTopic() + " : " + Message.getPayload()<<endl;
+	}*/
 }
 string subscriber::getname()
 {
 	return name;
 }
 
-LockCondwait * subscriber::getlock()
-{
-	return &lockcw;
-}
 void subscriber::Run()
 {
 	while(1){
-		if(this->subscriberMessages.size()==0){
-			//wait
-			//sleep(5);
-			lockcw.wait();
-			//pthread_cond_wait(&subCond,&subMutex.plock);
+		//cout<<"In Subscriber "<<this->name<<" Run method \n";
+		//cout<< this->getname()<<" subscriber message count is "<<subscriberMessages.get_filled_size()<<endl;
+		if(this->subscriberMessages.get_filled_size()==0){
+			sleep(1);
 		}
 		else{
-			while(this->subscriberMessages.size()>0){
-				lockcw.lock();
-				void * ptr;
-				subscriberMessages.dequeue(this->subscriberMessages.lq,&ptr,1);
+			while(this->subscriberMessages.get_filled_size()>0){
+				subscriberMessages.pop_noreturn();
 				this->msgcount++;
-				lockcw.unlock();
 				cout<<"In Subscriber "<<this->name<<" Run method \n";
 				cout<<"performing operation for " << this->msgcount<<" message\n";
 				int fact=1,num=10;
@@ -71,6 +66,8 @@ void subscriber::Run()
 				}
 				cout<<"factorial is : "<< fact<<endl;
 				cout<< "operation finished for " << this->msgcount <<" message\n";
+				auto end_time = chrono::steady_clock::now();
+				cout << "Elapsed time in milliseconds : " << chrono::duration_cast<chrono::milliseconds>(end_time - start_time).count()<< " ms" << endl;
 			}
 		}
 	}

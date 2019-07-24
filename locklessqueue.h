@@ -3,6 +3,7 @@
 
 #include <iostream>
 //#include "spdk/env.h"
+#include"message.h"
 
 /*enum queue_type {
         SPDK_RING_TYPE_SP_SC,       /* Single-producer, single-consumer */
@@ -13,14 +14,16 @@
 class LocklessQueue{
     public:
         LocklessQueue();
-        LocklessQueue(int size, enum spdk_ring_type type, size_t count, int socket);
-        size_t enqueue(struct spdk_ring * queue, void ** obj, size_t count);
-        size_t dequeue(struct spdk_ring * queue, void ** obj, size_t count);
-        int queue_count(struct spdk_ring *queue);
-        size_t size();
-    public:
+        LocklessQueue(int size, size_t count, int socket);
+        void push(message * msg);
+        void pop_noreturn();
+        message * pop();
+        size_t get_filled_size();
+        size_t get_size();
+    private:
         //size_t size; will be used later
         struct spdk_ring * lq;
+        size_t size;
         //util::SpinLock          m_lock;
         //util::ConditionVariable m_workTodoCondition;
         

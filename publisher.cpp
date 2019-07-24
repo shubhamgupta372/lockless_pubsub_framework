@@ -16,6 +16,6 @@ struct publishArguments;
 
 void publisher::Run()
 {
-	//std::cout<<"in "<<this->GetThreadName()<< " Run \n";
+	std::cout<<"in "<<this->GetThreadName()<< " Run \n";
 	publish(this->publisher_args); 
 }

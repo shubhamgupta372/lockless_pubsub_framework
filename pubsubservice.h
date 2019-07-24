@@ -10,8 +10,10 @@
 #include"threadbase.h"
 #include"mutexcv.h"
 #include"locklessqueue.h"
-using namespace std;
+#include<chrono>
 
+using namespace std;
+static const auto start_time= chrono::steady_clock::now();
 class pubsubservice:public ThreadBase {
 public:
 	pubsubservice(int);
@@ -20,11 +22,9 @@ public:
 	void addSubscriber(string topic, subscriber* Subscriber);
 	void removeSubscriber(string topic, subscriber* Subscriber);
 	void broadcast();
-	//void getMessagesForSubscriberOfTopic(string topic, subscriber &Subscriber);
 
 private:
 	map<string, vector<subscriber *>> subscribersTopicMap;
-	//queue<message> messagesQueue;
 	LocklessQueue messagesQueue;
 	subscriber *defSubscriber= new subscriber("default"); // default subscriber to contain message not subscribed by any subscriber
 	int size; // dummy size to replicate fixed size circular buffer
