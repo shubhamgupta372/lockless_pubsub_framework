@@ -1,15 +1,9 @@
 #ifndef __LOCKLESSQUEUE_H__
 #define __LOCKLESSQUEUE_H__
 
-#include <iostream>
-//#include "spdk/env.h"
+#include<iostream>
+#include"spdk/env.h"
 #include"message.h"
-
-/*enum queue_type {
-        SPDK_RING_TYPE_SP_SC,       /* Single-producer, single-consumer */
-     //   SPDK_RING_TYPE_MP_SC,       /* Multi-producer, single-consumer */
-       // SPDK_RING_TYPE_MP_MC        /* Multi-producer, Multi-consumer */
- //   };
 
 class LocklessQueue{
     public:

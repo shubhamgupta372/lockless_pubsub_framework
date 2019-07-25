@@ -36,7 +36,7 @@ int main()
 	}
 
 	//pubsub framework starts here
-	pubsubservice service(2); 
+	pubsubservice service(20); 
 	publisher  pobj[5];
 	message cplusplusMsg[5]={{"cplusplus", "Core cplusplus Concepts"},
 	{"cplusplus", "Dependency and AOP"},{"java", "STL library"},

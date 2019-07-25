@@ -3,7 +3,6 @@
 
 #include <pthread.h>
 #include <unistd.h>
-#include <semaphore.h>
 #include <iostream>
 #include <cstring>
 using namespace std;

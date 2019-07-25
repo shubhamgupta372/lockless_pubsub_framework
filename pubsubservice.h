@@ -8,7 +8,6 @@
 #include"subscriber.h"
 #include<queue>
 #include"threadbase.h"
-#include"mutexcv.h"
 #include"locklessqueue.h"
 #include<chrono>
 
@@ -28,7 +27,6 @@ private:
 	LocklessQueue messagesQueue;
 	subscriber *defSubscriber= new subscriber("default"); // default subscriber to contain message not subscribed by any subscriber
 	int size; // dummy size to replicate fixed size circular buffer
-	Mutex serviceMutex; // lock for main message queue to be shared by publisher and service
 	long unsigned int msgcount;
 };
 
