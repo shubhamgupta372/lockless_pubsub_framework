@@ -8,14 +8,16 @@ using namespace std;
 std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 pubsubservice::pubsubservice(int size)
 {
+	defSubscriber= new subscriber("default");
+	messagesQueue = new LocklessQueue(size);
 	this->size=size;
 	this->msgcount=0;
 }
 void pubsubservice::adMessageToQueue(message *msg)
 {
 	while(1){
-		if(messagesQueue.get_filled_size()<messagesQueue.get_size()){	
-			messagesQueue.push(msg);
+		if(messagesQueue->get_filled_size()<messagesQueue->get_size()){	
+			messagesQueue->push(msg);
 			msgcount++;
 			cout<<"Count of messages published till now : "<< msgcount << endl;
 			break;
@@ -60,14 +62,14 @@ void pubsubservice::removeSubscriber(string topic, subscriber* Subscriber)
 void pubsubservice::broadcast()
 {
 	while(1){
-		if (!messagesQueue.get_filled_size()){
+		if (!messagesQueue->get_filled_size()){
 			cout << "No more messages from publisher in msg queue, waiting for new msg \n";
 			sleep(2);
 
 		}
 		else {
-			while (messagesQueue.get_filled_size()) {
-				message * Message = messagesQueue.pop();
+			while (messagesQueue->get_filled_size()) {
+				message * Message = messagesQueue->pop();
 				string topic = Message->getTopic();
 				map<string, vector<subscriber*>>::iterator it;
 				it = subscribersTopicMap.find(topic);

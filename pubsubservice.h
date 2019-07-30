@@ -25,10 +25,10 @@ public:
 
 private:
 	map<string, vector<subscriber *>> subscribersTopicMap;
-	subscriber *defSubscriber= new subscriber("default"); // default subscriber to contain message not subscribed by any subscriber
+	subscriber *defSubscriber; // default subscriber to contain message not subscribed by any subscriber
 	size_t size; // dummy size to replicate fixed size circular buffer
 	size_t msgcount;
-	LocklessQueue messagesQueue;
+	LocklessQueue * messagesQueue;
 };
 
 #endif
