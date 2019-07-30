@@ -15,7 +15,7 @@ class subscriber:public ThreadBase {
 public:
 	subscriber(string);
 	void Run();
-	LocklessQueue * getSubscriberMessages();
+	LocklessQueue *getSubscriberMessages();
 	void setSubscriberMessages(LocklessQueue subscriberMessages);
 	void addSubscription(string topic, pubsubservice &service);
 	void removeSubscription(string topic, pubsubservice &service);

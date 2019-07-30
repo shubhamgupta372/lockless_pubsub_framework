@@ -6,7 +6,6 @@ using namespace std;
 
 class message {
 public:
-	//message();
 	message(string topic, string payload);
 	string getTopic();
 	void setTopic(string topic);

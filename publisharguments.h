@@ -9,8 +9,8 @@
 using namespace std;
 
 struct publishArguments{
-	message * message_obj;
-	pubsubservice * sevice_obj;
+	message *message_obj;
+	pubsubservice *sevice_obj;
 };
 
 #endif

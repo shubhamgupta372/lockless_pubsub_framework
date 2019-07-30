@@ -15,13 +15,13 @@
 using namespace std;
 
 // method to intialise arguments of publish method in publisher object
-void InitialisePubObject(message &mobj, pubsubservice &psobj, publisher &pobj)
+void InitialisePubObject(message *mobj, pubsubservice *psobj, publisher *pobj)
 {
-	publishArguments * pargs;
+	publishArguments *pargs;
 	pargs= new publishArguments;
-	pargs->message_obj=&mobj;
-	pargs->sevice_obj=&psobj;
-	pobj.publisher_args=pargs;
+	pargs->message_obj = mobj;
+	pargs->sevice_obj = psobj;
+	pobj->publisher_args = pargs;
 }
 
 int main()
@@ -36,25 +36,22 @@ int main()
 	}
 
 	//pubsub framework starts here
-	pubsubservice service(1024); 
+	pubsubservice service(1024); //argument is message queue size
 	publisher  pobj[1000];
 	message cplusplusMsg[5]={{"cplusplus", "Core cplusplus Concepts"},
 	{"cplusplus", "Dependency and AOP"},{"java", "STL library"},
 	{"cplusplus","Boost"},{"java","pubsub"}};
 	subscriber sobj[20]={{"Sub_1"},{"Sub_2"},{"Sub_3"},{"Sub_4"},{"Sub_5"},{"Sub_6"},{"Sub_7"},{"Sub_8"},{"Sub_9"},{"Sub_10"},
 	{"Sub_11"},{"Sub_12"},{"Sub_13"},{"Sub_14"},{"Sub_15"},{"Sub_16"},{"Sub_17"},{"Sub_18"},{"Sub_19"},{"Sub_20"}};
-	service.addSubscriber("cplusplus",&sobj[0]);
-	service.addSubscriber("java",&sobj[1]);
 	for(int i=0;i<20;i+=2)
 	{
 		service.addSubscriber("cplusplus",&sobj[i]);
 		service.addSubscriber("java",&sobj[i+1]);
-
 	}
 	// creating thread for each publisher object and publishing meassges
 	for(int i=0;i<1000;i++)
 	{
-		InitialisePubObject(cplusplusMsg[i%5],service,pobj[i]);
+		InitialisePubObject(&cplusplusMsg[i%5],&service,&pobj[i]);
 		string name="Publisher Thread " + std::to_string(i+1);
         bool status=pobj[i].Start(name.c_str());
 		if(!status){

@@ -22,7 +22,7 @@ public:
 		return m_ThreadName;
 	}
 
-	bool Start(const char* thread_name) {
+	bool Start(const char *thread_name) {
 		int err = pthread_create(&m_ThreadHandle, &m_ThreadAttribute, &Dispatch, this);
 		
 		// err will contain error code in case thread is not created
@@ -48,18 +48,13 @@ public:
 		return true;
 	}
 
-	virtual void OnRun() {
-		std::cout << GetThreadName() <<" says: Hello" << std::endl;
-	}
-
 	virtual void Run() {
-		OnRun();
 
 	}
 
 	void Join()
 	{
-		void * ret;
+		void *ret;
 		if(pthread_join(m_ThreadHandle, &ret)!=0){
 			std::cout<<"Cannot join threads, Error \n";
 		}

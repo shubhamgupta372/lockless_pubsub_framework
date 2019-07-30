@@ -3,9 +3,6 @@
 #include"message.h"
 using namespace std;
 
-// message::message()
-// {
-// }
 message::message(string topic, string payload)
 {
 	this->topic = topic;

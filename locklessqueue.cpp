@@ -14,7 +14,6 @@ LocklessQueue::LocklessQueue()
     }
 }
 
-
 LocklessQueue::LocklessQueue(size_t size)
 {
     lq= spdk_ring_create(SPDK_RING_TYPE_MP_MC, size, 0);
@@ -25,11 +24,8 @@ LocklessQueue::LocklessQueue(size_t size)
 }
 
 
-void LocklessQueue::push(message * msg)
+void LocklessQueue::push(message *msg)
 {
-    //void * obj;
-    //obj= &msg;
-    //message Message = *(message *)obj;
     //cout<<"enque message topic is ..." << Message.getTopic()<<".....\n";
     size_t eq= spdk_ring_enqueue(lq, (void **)&msg, 1, NULL);
     if(!eq) {
@@ -39,9 +35,9 @@ void LocklessQueue::push(message * msg)
 
 }
 
-message * LocklessQueue::pop()
+message *LocklessQueue::pop()
 {
-    void * obj;
+    void *obj;
     size_t dq= spdk_ring_dequeue(lq, (void **)&obj, 1);
     if(!dq) {
         cout<<"dequeue of element unsuccessfull, Error ! !\n";
@@ -52,7 +48,7 @@ message * LocklessQueue::pop()
 
 void LocklessQueue::pop_noreturn()
 {
-    void * obj;
+    void *obj;
     size_t dq= spdk_ring_dequeue(lq, (void **)&obj, 1);
     if(!dq) {
         //not dequeued successfully condition

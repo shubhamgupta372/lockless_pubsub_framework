@@ -30,28 +30,28 @@ void pubsubservice::adMessageToQueue(message *msg)
 	}
 	
 }
-void pubsubservice::addSubscriber(string topic, subscriber* Subscriber)
+void pubsubservice::addSubscriber(string topic, subscriber *Subscriber)
 {
 	map<string, vector<subscriber *>>::iterator it;
 	it = subscribersTopicMap.find(topic);
 	if (it != subscribersTopicMap.end()){
-		vector<subscriber*> &subscribers = subscribersTopicMap[topic];
+		vector<subscriber *> &subscribers = subscribersTopicMap[topic];
 		subscribers.push_back(Subscriber);
 		//subscribersTopicMap[topic] = subscribers;
 	}
 	else {
-		vector<subscriber*> subscribers;
+		vector<subscriber *> subscribers;
 		subscribers.push_back(Subscriber);
 		subscribersTopicMap[topic] = subscribers;
 	}
 }
-void pubsubservice::removeSubscriber(string topic, subscriber* Subscriber)
+void pubsubservice::removeSubscriber(string topic, subscriber *Subscriber)
 {
-	map<string,vector<subscriber*>>::iterator it;
+	map<string,vector<subscriber *>>::iterator it;
 	it = subscribersTopicMap.find(topic);
 	if (it != subscribersTopicMap.end()){
-		vector<subscriber*> &subscribers = subscribersTopicMap[topic];
-		vector<subscriber*>::iterator itv;
+		vector<subscriber *> &subscribers = subscribersTopicMap[topic];
+		vector<subscriber *>::iterator itv;
 		itv = find(subscribers.begin(), subscribers.end(), Subscriber);
 		if (itv != subscribers.end()) {
 			subscribers.erase(itv);
@@ -69,14 +69,14 @@ void pubsubservice::broadcast()
 		}
 		else {
 			while (messagesQueue->get_filled_size()) {
-				message * Message = messagesQueue->pop();
+				message *Message = messagesQueue->pop();
 				string topic = Message->getTopic();
-				map<string, vector<subscriber*>>::iterator it;
+				map<string, vector<subscriber *>>::iterator it;
 				it = subscribersTopicMap.find(topic);
 				if (it != subscribersTopicMap.end()) {
-					vector<subscriber*> subscribers = subscribersTopicMap[topic];
-					for (subscriber* a : subscribers) {
-						LocklessQueue * subMessages = a->getSubscriberMessages();
+					vector<subscriber *> subscribers = subscribersTopicMap[topic];
+					for (subscriber *a : subscribers) {
+						LocklessQueue *subMessages = a->getSubscriberMessages();
 						subMessages->push( Message);
 						//cout << "Number of messages for current sub " <<a->getname() <<" are : " << subMessages->get_filled_size() << endl;
 						//a->printMessages();
@@ -85,7 +85,7 @@ void pubsubservice::broadcast()
 				else
 				{
 					cout<< "No subscriber for " << topic << " topic. pushing to default subscriber" <<endl;
-					LocklessQueue * subMessages = defSubscriber->getSubscriberMessages();
+					LocklessQueue *subMessages = defSubscriber->getSubscriberMessages();
 					subMessages->push(Message);
 					//cout << "Number of messages for current sub " <<defSubscriber->getname() <<" are : " << subMessages->get_filled_size() << endl;
 					//defSubscriber->printMessages();
