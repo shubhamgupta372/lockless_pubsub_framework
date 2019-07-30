@@ -11,10 +11,10 @@ using namespace std;
 
 class publisher:public ThreadBase {
 public:
-	 void * publish(void * obj);
+	 void *publish(void *obj);
 	 void Run();
 public:
-	publishArguments * publisher_args;
+	publishArguments *publisher_args;
 };
 
 #endif

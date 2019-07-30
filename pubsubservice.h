@@ -21,6 +21,7 @@ public:
 	void addSubscriber(string topic, subscriber *Subscriber);
 	void removeSubscriber(string topic, subscriber *Subscriber);
 	void broadcast();
+	~pubsubservice();
 
 private:
 	map<string, vector<subscriber *>> subscribersTopicMap;

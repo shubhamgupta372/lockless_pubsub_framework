@@ -99,3 +99,8 @@ void pubsubservice::Run()
 {
 	this->broadcast();
 }
+
+pubsubservice::~pubsubservice()
+	{
+		delete []defSubscriber;
+	}
