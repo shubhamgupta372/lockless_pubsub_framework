@@ -11,13 +11,12 @@ pubsubservice::pubsubservice(int size)
 	this->size=size;
 	this->msgcount=0;
 }
-void pubsubservice::adMessageToQueue(message &msg)
+void pubsubservice::adMessageToQueue(message *msg)
 {
 	while(1){
-		if(messagesQueue.get_filled_size()<this->size){	
-			messagesQueue.push(&msg);
+		if(messagesQueue.get_filled_size()<messagesQueue.get_size()){	
+			messagesQueue.push(msg);
 			msgcount++;
-			cout<<"New message published for '"<<msg.getTopic()<< "' topic"<< endl;
 			cout<<"Count of messages published till now : "<< msgcount << endl;
 			break;
 		}
@@ -77,8 +76,8 @@ void pubsubservice::broadcast()
 					for (subscriber* a : subscribers) {
 						LocklessQueue * subMessages = a->getSubscriberMessages();
 						subMessages->push( Message);
-						cout << "Number of messages for current sub " <<a->getname() <<" are : " << subMessages->get_filled_size() << endl;
-						a->printMessages();
+						//cout << "Number of messages for current sub " <<a->getname() <<" are : " << subMessages->get_filled_size() << endl;
+						//a->printMessages();
 					}
 				}
 				else
@@ -86,8 +85,8 @@ void pubsubservice::broadcast()
 					cout<< "No subscriber for " << topic << " topic. pushing to default subscriber" <<endl;
 					LocklessQueue * subMessages = defSubscriber->getSubscriberMessages();
 					subMessages->push(Message);
-					cout << "Number of messages for current sub " <<defSubscriber->getname() <<" are : " << subMessages->get_filled_size() << endl;
-					defSubscriber->printMessages();
+					//cout << "Number of messages for current sub " <<defSubscriber->getname() <<" are : " << subMessages->get_filled_size() << endl;
+					//defSubscriber->printMessages();
 				}
 				
 			}

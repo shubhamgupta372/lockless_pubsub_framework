@@ -17,17 +17,17 @@ class pubsubservice:public ThreadBase {
 public:
 	pubsubservice(int);
     void Run();
-	void adMessageToQueue(message &message);
-	void addSubscriber(string topic, subscriber* Subscriber);
-	void removeSubscriber(string topic, subscriber* Subscriber);
+	void adMessageToQueue(message *message);
+	void addSubscriber(string topic, subscriber *Subscriber);
+	void removeSubscriber(string topic, subscriber *Subscriber);
 	void broadcast();
 
 private:
 	map<string, vector<subscriber *>> subscribersTopicMap;
-	LocklessQueue messagesQueue;
 	subscriber *defSubscriber= new subscriber("default"); // default subscriber to contain message not subscribed by any subscriber
-	int size; // dummy size to replicate fixed size circular buffer
-	long unsigned int msgcount;
+	size_t size; // dummy size to replicate fixed size circular buffer
+	size_t msgcount;
+	LocklessQueue messagesQueue;
 };
 
 #endif

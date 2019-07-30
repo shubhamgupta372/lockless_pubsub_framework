@@ -16,20 +16,16 @@ public:
 	subscriber(string);
 	void Run();
 	LocklessQueue * getSubscriberMessages();
-	void setSubscriberMessages(LocklessQueue &subscriberMessages);
+	void setSubscriberMessages(LocklessQueue subscriberMessages);
 	void addSubscription(string topic, pubsubservice &service);
 	void removeSubscription(string topic, pubsubservice &service);
-	void printMessages() const;
+	void printMessages();
 	string getname();
 
 private:
 	string name;
 	LocklessQueue subscriberMessages;
-	unsigned long int msgcount; 
-	/*bool operator ==(subscriber right) const
-	{
-		return subscriberMessages == right.subscriberMessages;
-	}*/
+	size_t msgcount; 
 };
 
 

@@ -8,7 +8,7 @@
 class LocklessQueue{
     public:
         LocklessQueue();
-        LocklessQueue(int size, size_t count, int socket);
+        LocklessQueue(size_t size);
         void push(message * msg);
         void pop_noreturn();
         message * pop();

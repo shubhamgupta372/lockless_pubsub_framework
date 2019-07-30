@@ -9,7 +9,8 @@ struct publishArguments;
  void *publisher::publish( void * obj1)
 {
 	publishArguments * obj= (publishArguments *) obj1;
-	obj->sevice_obj->adMessageToQueue(*(obj->message_obj));
+	cout<<"New message is being published by publiher thread "<< this->GetThreadName() <<" for '"<<obj->message_obj->getTopic()<< "' topic"<< endl;
+	obj->sevice_obj->adMessageToQueue(obj->message_obj);
 	//cout<<"message published to queue \n";
 	//pubSubService.adMessageToQueue(Message);
 }
