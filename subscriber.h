@@ -13,7 +13,7 @@ class pubsubservice;
 
 class subscriber:public ThreadBase {
 public:
-	subscriber(string);
+	subscriber();
 	void Run();
 	LocklessQueue *getSubscriberMessages();
 	void setSubscriberMessages(LocklessQueue subscriberMessages);

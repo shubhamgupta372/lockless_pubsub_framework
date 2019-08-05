@@ -8,7 +8,7 @@ using namespace std;
 LocklessQueue::LocklessQueue()
 {
     size=1024;
-    lq= spdk_ring_create(SPDK_RING_TYPE_MP_MC, 1024, 0);
+    lq= spdk_ring_create(SPDK_RING_TYPE_MP_MC, 4096, 0);
     if(!lq){
         cout<<"failed to create ring !!!! \n";
     }

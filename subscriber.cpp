@@ -6,12 +6,12 @@
 #include<unistd.h>
 using namespace std;
 
-subscriber::subscriber(string name)
+subscriber::subscriber()
 {
-	this->name = name;
+	//this->name = name;
 	this->msgcount=0;
 }
-LocklessQueue * subscriber::getSubscriberMessages() 
+LocklessQueue *subscriber::getSubscriberMessages() 
 {
 	return &subscriberMessages;
 }
@@ -29,7 +29,7 @@ void subscriber::removeSubscription(string topic, pubsubservice &pubSubService)
 }
 void subscriber::printMessages() 
 {
-LocklessQueue tempsubscriberMessages=*(this->getSubscriberMessages());
+	LocklessQueue tempsubscriberMessages = *(getSubscriberMessages());
 	while(tempsubscriberMessages.get_filled_size())
 	{
 		message tempmessage=*(tempsubscriberMessages.pop());
@@ -45,10 +45,10 @@ void subscriber::Run()
 {
 	while(1){
 	
-		while(this->subscriberMessages.get_filled_size()){
+		while(subscriberMessages.get_filled_size()){
 			subscriberMessages.pop_noreturn();
 			this->msgcount++;
-			cout<<"\n**************In Subscriber "<<this->name<<" Run method ***********\n";
+			cout<<"\n**************In Subscriber "<<this->GetThreadName()<<" Run method ***********\n";
 			cout<<"performing operation for message number " << this->msgcount<<"\n";
 			int fact=1,num=10;
 			while(num>0){

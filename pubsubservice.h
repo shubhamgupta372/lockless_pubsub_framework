@@ -10,6 +10,7 @@
 #include"threadbase.h"
 #include"locklessqueue.h"
 #include<chrono>
+#include<atomic>
 
 using namespace std;
 static const auto start_time= chrono::steady_clock::now();
@@ -27,7 +28,8 @@ private:
 	map<string, vector<subscriber *>> subscribersTopicMap;
 	subscriber *defSubscriber; // default subscriber to contain message not subscribed by any subscriber
 	size_t size; // dummy size to replicate fixed size circular buffer
-	size_t msgcount;
+	//size_t msgcount;
+	std::atomic<size_t> msgcount;
 	LocklessQueue *messagesQueue;
 };
 

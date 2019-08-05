@@ -8,17 +8,25 @@ using namespace std;
 std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 pubsubservice::pubsubservice(int size)
 {
-	defSubscriber= new subscriber("default");
+	defSubscriber= new subscriber();
 	messagesQueue = new LocklessQueue(size);
 	this->size=size;
 	this->msgcount=0;
 }
+
+pubsubservice::~pubsubservice()
+{
+	delete defSubscriber;
+	//delete LocklessQueue;
+}
+
 void pubsubservice::adMessageToQueue(message *msg)
 {
 	while(1){
-		if(messagesQueue->get_filled_size()<messagesQueue->get_size()){	
+		if(messagesQueue->get_filled_size() < messagesQueue->get_size()){	
 			messagesQueue->push(msg);
-			msgcount++;
+			msgcount.fetch_add(1, std::memory_order_relaxed);
+			//msgcount++;
 			cout<<"Count of messages published till now : "<< msgcount << endl;
 			break;
 		}
@@ -31,15 +39,15 @@ void pubsubservice::adMessageToQueue(message *msg)
 	
 }
 void pubsubservice::addSubscriber(string topic, subscriber *Subscriber)
-{
+{	
+	//look for set or hashmap instead of vector. Also replace map with unordered
 	map<string, vector<subscriber *>>::iterator it;
 	it = subscribersTopicMap.find(topic);
 	if (it != subscribersTopicMap.end()){
 		vector<subscriber *> &subscribers = subscribersTopicMap[topic];
 		subscribers.push_back(Subscriber);
 		//subscribersTopicMap[topic] = subscribers;
-	}
-	else {
+	} else {
 		vector<subscriber *> subscribers;
 		subscribers.push_back(Subscriber);
 		subscribersTopicMap[topic] = subscribers;
@@ -52,6 +60,7 @@ void pubsubservice::removeSubscriber(string topic, subscriber *Subscriber)
 	if (it != subscribersTopicMap.end()){
 		vector<subscriber *> &subscribers = subscribersTopicMap[topic];
 		vector<subscriber *>::iterator itv;
+		// try to replace with hash map or set
 		itv = find(subscribers.begin(), subscribers.end(), Subscriber);
 		if (itv != subscribers.end()) {
 			subscribers.erase(itv);
@@ -74,16 +83,14 @@ void pubsubservice::broadcast()
 				map<string, vector<subscriber *>>::iterator it;
 				it = subscribersTopicMap.find(topic);
 				if (it != subscribersTopicMap.end()) {
-					vector<subscriber *> subscribers = subscribersTopicMap[topic];
+					vector<subscriber *> &subscribers = subscribersTopicMap[topic];
 					for (subscriber *a : subscribers) {
 						LocklessQueue *subMessages = a->getSubscriberMessages();
 						subMessages->push( Message);
 						//cout << "Number of messages for current sub " <<a->getname() <<" are : " << subMessages->get_filled_size() << endl;
 						//a->printMessages();
 					}
-				}
-				else
-				{
+				} else {
 					cout<< "No subscriber for " << topic << " topic. pushing to default subscriber" <<endl;
 					LocklessQueue *subMessages = defSubscriber->getSubscriberMessages();
 					subMessages->push(Message);
@@ -102,7 +109,3 @@ void pubsubservice::Run()
 	this->broadcast();
 }
 
-pubsubservice::~pubsubservice()
-	{
-		delete []defSubscriber;
-	}
