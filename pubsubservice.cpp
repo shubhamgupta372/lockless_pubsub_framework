@@ -17,7 +17,7 @@ pubsubservice::pubsubservice(int size)
 pubsubservice::~pubsubservice()
 {
 	delete defSubscriber;
-	//delete LocklessQueue;
+	delete messagesQueue;
 }
 
 void pubsubservice::adMessageToQueue(message *msg)
