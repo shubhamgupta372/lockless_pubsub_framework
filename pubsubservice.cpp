@@ -6,7 +6,7 @@
 #include<algorithm>
 using namespace std;
 std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
-pubsubservice::pubsubservice(int size)
+pubsubservice::pubsubservice(size_t size)
 {
 	defSubscriber= new subscriber();
 	messagesQueue = new LocklessQueue(size);
@@ -86,14 +86,22 @@ void pubsubservice::broadcast()
 					vector<subscriber *> &subscribers = subscribersTopicMap[topic];
 					for (subscriber *a : subscribers) {
 						LocklessQueue *subMessages = a->getSubscriberMessages();
-						subMessages->push( Message);
+						if(subMessages->get_filled_size() < subMessages->get_size() ){
+						subMessages->push(Message);
+						}
 						//cout << "Number of messages for current sub " <<a->getname() <<" are : " << subMessages->get_filled_size() << endl;
 						//a->printMessages();
 					}
 				} else {
 					cout<< "No subscriber for " << topic << " topic. pushing to default subscriber" <<endl;
 					LocklessQueue *subMessages = defSubscriber->getSubscriberMessages();
-					subMessages->push(Message);
+					if(subMessages->get_filled_size() < subMessages->get_size() ){
+						subMessages->push(Message);
+					} else {
+						subMessages->pop_noreturn();
+						subMessages->push(Message);
+					}
+					
 					//cout << "Number of messages for current sub " <<defSubscriber->getname() <<" are : " << subMessages->get_filled_size() << endl;
 					//defSubscriber->printMessages();
 				}

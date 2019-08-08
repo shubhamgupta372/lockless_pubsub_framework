@@ -8,16 +8,30 @@ using namespace std;
 
 subscriber::subscriber()
 {
-	//this->name = name;
-	this->msgcount=0;
+	subscriberMessages = new LocklessQueue;
+	msgcount=0;
+	size = 1024;
 }
+
+subscriber::subscriber(size_t size )
+{
+	subscriberMessages = new LocklessQueue(size);
+	this->size=size;
+	msgcount=0;
+}
+
+subscriber::~subscriber()
+{
+	delete subscriberMessages;
+}
+
 LocklessQueue *subscriber::getSubscriberMessages() 
 {
-	return &subscriberMessages;
+	return subscriberMessages;
 }
 void subscriber::setSubscriberMessages(LocklessQueue subscriberMessagesarg)
 {
-	this->subscriberMessages = subscriberMessagesarg;
+	*subscriberMessages = subscriberMessagesarg;
 }
 void subscriber::addSubscription(string topic, pubsubservice &pubSubService)
 {
@@ -45,11 +59,11 @@ void subscriber::Run()
 {
 	while(1){
 	
-		while(subscriberMessages.get_filled_size()){
-			subscriberMessages.pop_noreturn();
-			this->msgcount++;
+		while(subscriberMessages->get_filled_size()){
+			subscriberMessages->pop_noreturn();
+			msgcount++;
 			cout<<"\n**************In Subscriber "<<this->GetThreadName()<<" Run method ***********\n";
-			cout<<"performing operation for message number " << this->msgcount<<"\n";
+			cout<<"performing operation for message number " << msgcount<<"\n";
 			int fact=1,num=10;
 			while(num>0){
 				fact *=num;
@@ -57,7 +71,7 @@ void subscriber::Run()
 			}
 			auto end_time = chrono::steady_clock::now();
 			cout<<"factorial is : "<< fact<<endl;
-			cout<< "************operation finished for " << this->msgcount <<" message***********\n";
+			cout<< "************operation finished for " << msgcount <<" message***********\n";
 			cout << "***********Elapsed time in milliseconds : " << chrono::duration_cast<chrono::milliseconds>(end_time - start_time).count()<< " ms ***********" << endl;	
 		}
 		

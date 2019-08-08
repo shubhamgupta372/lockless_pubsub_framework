@@ -14,6 +14,8 @@ class pubsubservice;
 class subscriber:public ThreadBase {
 public:
 	subscriber();
+	subscriber(size_t);
+	~subscriber();
 	void Run();
 	LocklessQueue *getSubscriberMessages();
 	void setSubscriberMessages(LocklessQueue subscriberMessages);
@@ -24,7 +26,8 @@ public:
 
 private:
 	string name;
-	LocklessQueue subscriberMessages;
+	size_t size;
+	LocklessQueue *subscriberMessages;
 	size_t msgcount; 
 };
 

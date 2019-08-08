@@ -16,13 +16,13 @@ using namespace std;
 static const auto start_time= chrono::steady_clock::now();
 class pubsubservice:public ThreadBase {
 public:
-	pubsubservice(int);
+	pubsubservice(size_t);
+	~pubsubservice();
     void Run();
 	void adMessageToQueue(message *message);
 	void addSubscriber(string topic, subscriber *Subscriber);
 	void removeSubscriber(string topic, subscriber *Subscriber);
 	void broadcast();
-	~pubsubservice();
 
 private:
 	map<string, vector<subscriber *>> subscribersTopicMap;
