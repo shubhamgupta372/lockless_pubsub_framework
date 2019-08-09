@@ -20,7 +20,9 @@ The dependencies can be installed automatically by scripts/pkgdep.sh.
 	./scripts/pkgdep.sh
 
 to build run below commands
+
 	./configure
+	
 	make
 
 run unit test to make sure build is successful using below command
