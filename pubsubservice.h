@@ -3,7 +3,8 @@
 
 #include<iostream>
 #include"message.h"
-#include<map>
+#include<unordered_map>
+#include<unordered_set>
 #include<vector>
 #include"subscriber.h"
 #include<queue>
@@ -23,14 +24,15 @@ public:
 	void addSubscriber(string topic, subscriber *Subscriber);
 	void removeSubscriber(string topic, subscriber *Subscriber);
 	void broadcast();
-
 private:
-	map<string, vector<subscriber *>> subscribersTopicMap;
+	unordered_map<string, vector<subscriber *>> subscribersTopicMap;
+	//unordered_map<message *, unordered_set<subscriber *>> remainingSubs;
 	subscriber *defSubscriber; // default subscriber to contain message not subscribed by any subscriber
 	size_t size; // dummy size to replicate fixed size circular buffer
 	//size_t msgcount;
 	std::atomic<size_t> msgcount;
 	LocklessQueue *messagesQueue;
+
 };
 
 #endif

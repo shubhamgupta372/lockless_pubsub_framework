@@ -7,6 +7,8 @@ message::message(string topic, string payload)
 {
 	this->topic = topic;
 	this->payload = payload;
+	isPublished = false;
+	finishCount=0;
 }
 string message::getTopic() {
 	return topic;

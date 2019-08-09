@@ -46,8 +46,8 @@ void subscriber::printMessages()
 	LocklessQueue tempsubscriberMessages = *(getSubscriberMessages());
 	while(tempsubscriberMessages.get_filled_size())
 	{
-		message tempmessage=*(tempsubscriberMessages.pop());
-		cout<<"Message Topic -> " + tempmessage.getTopic() + " : " + tempmessage.getPayload()<<endl;
+		message * tempmessage=(tempsubscriberMessages.pop());
+		cout<<"Message Topic -> " + tempmessage->getTopic() + " : " + tempmessage->getPayload()<<endl;
 	}
 }
 string subscriber::getname()
@@ -60,7 +60,7 @@ void subscriber::Run()
 	while(1){
 	
 		while(subscriberMessages->get_filled_size()){
-			subscriberMessages->pop_noreturn();
+			message * msg=subscriberMessages->pop();
 			msgcount++;
 			cout<<"\n**************In Subscriber "<<this->GetThreadName()<<" Run method ***********\n";
 			cout<<"performing operation for message number " << msgcount<<"\n";
@@ -73,6 +73,12 @@ void subscriber::Run()
 			cout<<"factorial is : "<< fact<<endl;
 			cout<< "************operation finished for " << msgcount <<" message***********\n";
 			cout << "***********Elapsed time in milliseconds : " << chrono::duration_cast<chrono::milliseconds>(end_time - start_time).count()<< " ms ***********" << endl;	
+			msg->finishCount.fetch_sub(1, std::memory_order_relaxed);
+			cout<<"---------finiscount is : "<<msg->finishCount<<" ---------\n";
+			if(msg->finishCount == 0 && msg->isPublished == true){
+				//delete msg;
+				cout<<"----------------delete msg----------- \n";
+			}
 		}
 		
 	}

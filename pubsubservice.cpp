@@ -41,7 +41,7 @@ void pubsubservice::adMessageToQueue(message *msg)
 void pubsubservice::addSubscriber(string topic, subscriber *Subscriber)
 {	
 	//look for set or hashmap instead of vector. Also replace map with unordered
-	map<string, vector<subscriber *>>::iterator it;
+	unordered_map<string, vector<subscriber *>>::iterator it;
 	it = subscribersTopicMap.find(topic);
 	if (it != subscribersTopicMap.end()){
 		vector<subscriber *> &subscribers = subscribersTopicMap[topic];
@@ -55,7 +55,7 @@ void pubsubservice::addSubscriber(string topic, subscriber *Subscriber)
 }
 void pubsubservice::removeSubscriber(string topic, subscriber *Subscriber)
 {
-	map<string,vector<subscriber *>>::iterator it;
+	unordered_map<string,vector<subscriber *>>::iterator it;
 	it = subscribersTopicMap.find(topic);
 	if (it != subscribersTopicMap.end()){
 		vector<subscriber *> &subscribers = subscribersTopicMap[topic];
@@ -78,16 +78,26 @@ void pubsubservice::broadcast()
 		}
 		else {
 			while (messagesQueue->get_filled_size()) {
+				// bool varibale to check for a message, if any of the subscriber got skipped due to subscriber queue being full
+				bool isSubBusy = false;
 				message *Message = messagesQueue->pop();
 				string topic = Message->getTopic();
-				map<string, vector<subscriber *>>::iterator it;
+				unordered_map<string, vector<subscriber *>>::iterator it;
 				it = subscribersTopicMap.find(topic);
 				if (it != subscribersTopicMap.end()) {
 					vector<subscriber *> &subscribers = subscribersTopicMap[topic];
 					for (subscriber *a : subscribers) {
+						if(Message->subStatus.count(a)==0){
 						LocklessQueue *subMessages = a->getSubscriberMessages();
 						if(subMessages->get_filled_size() < subMessages->get_size() ){
-						subMessages->push(Message);
+							// check if no mapping exist for sub, then push the message to its queue
+								subMessages->push(Message);
+								Message->subStatus[a]=1;
+								//make it atomic
+								Message->finishCount.fetch_add(1, std::memory_order_relaxed);
+							} else {
+							isSubBusy = true;
+						} 
 						}
 						//cout << "Number of messages for current sub " <<a->getname() <<" are : " << subMessages->get_filled_size() << endl;
 						//a->printMessages();
@@ -104,6 +114,11 @@ void pubsubservice::broadcast()
 					
 					//cout << "Number of messages for current sub " <<defSubscriber->getname() <<" are : " << subMessages->get_filled_size() << endl;
 					//defSubscriber->printMessages();
+				}
+				if(isSubBusy == true ){
+					messagesQueue->push(Message);
+				} else {
+					Message->isPublished = true;
 				}
 				
 			}

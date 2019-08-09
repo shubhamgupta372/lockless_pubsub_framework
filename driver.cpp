@@ -37,18 +37,18 @@ int main()
 
 	//pubsub framework starts here
 	pubsubservice service(1024); //argument is message queue size
-	publisher  pobj[10000];
+	publisher  pobj[5];
 	message cplusplusMsg[5]={{"cplusplus", "Core cplusplus Concepts"},
-	{"cplusplus", "Dependency and AOP"},{"java", "STL library"},
+	{"cplusplus", "Dependency and AOP"},{"java", "pubsub"},
 	{"cplusplus","Boost"},{"java","pubsub"}};
-	subscriber sobj[100];
-	for(int i=0;i<100;i+=2)
+	subscriber sobj[4];
+	for(int i=0;i<4;i+=2)
 	{
 		service.addSubscriber("cplusplus",&sobj[i]);
 		service.addSubscriber("java",&sobj[i+1]);
 	}
 	// creating thread for each publisher object and publishing meassges
-	for(int i=0;i<10000;i++)
+	for(int i=0;i<5;i++)
 	{
 		InitialisePubObject(&cplusplusMsg[i%5],&service,&pobj[i]);
 		string name="Publisher Thread " + std::to_string(i+1);
@@ -71,7 +71,7 @@ int main()
 		}
 
 	// creating  subscriber threads	
-	for(int i=0;i<100;i++){
+	for(int i=0;i<4;i++){
 		string name="Subscriber Thread " + std::to_string(i+1);
         bool status=sobj[i].Start(name.c_str());
 		if(!status){
@@ -90,11 +90,11 @@ int main()
 	*/
 
 	// join all the publisher, subscriber and service threads
- 	for(int i=0;i<10000;i++){
+ 	for(int i=0;i<5;i++){
  		pobj[i].Join();
 	}
 	service.Join();
-	for(int i=0;i<100;i++){
+	for(int i=0;i<4;i++){
  		sobj[i].Join();
 	}
 
